@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Linksaw Shortcuts</title>
-  <link rel="icon" type="image/png" href="icon128.png">
+  <link rel="icon" type="image/png" href="icon.png">
   <style>
     :root {
       --bg: #ffffff;
@@ -14,6 +15,7 @@
       --primary-hover: #1d4ed8;
       --surface: #f9fafb;
     }
+
     body {
       margin: 0;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -21,6 +23,7 @@
       color: var(--text);
       line-height: 1.6;
     }
+
     header {
       padding: 24px 48px;
       display: flex;
@@ -28,6 +31,7 @@
       justify-content: space-between;
       border-bottom: 1px solid #e5e7eb;
     }
+
     .logo {
       display: flex;
       align-items: center;
@@ -35,23 +39,27 @@
       font-weight: 700;
       font-size: 20px;
     }
+
     .hero {
       max-width: 800px;
       margin: 80px auto;
       text-align: center;
       padding: 0 24px;
     }
+
     h1 {
       font-size: 56px;
       margin-bottom: 24px;
       letter-spacing: -0.03em;
       font-weight: 800;
     }
+
     p.lead {
       font-size: 20px;
       color: var(--text-muted);
       margin-bottom: 40px;
     }
+
     .btn {
       display: inline-flex;
       align-items: center;
@@ -65,14 +73,17 @@
       font-size: 16px;
       transition: background 0.2s, transform 0.2s;
     }
+
     .btn:hover {
       background: var(--primary-hover);
       transform: translateY(-2px);
     }
+
     .features {
       background: var(--surface);
       padding: 80px 24px;
     }
+
     .features-grid {
       max-width: 1000px;
       margin: 0 auto;
@@ -80,27 +91,32 @@
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 40px;
     }
+
     .feature-card {
       background: white;
       padding: 32px;
       border-radius: 12px;
       border: 1px solid #e5e7eb;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
       transition: box-shadow 0.2s;
     }
+
     .feature-card:hover {
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
+
     .feature-card h3 {
       font-size: 20px;
       margin-top: 0;
       margin-bottom: 12px;
       color: #111827;
     }
+
     .feature-card p {
       color: var(--text-muted);
       margin: 0;
     }
+
     footer {
       text-align: center;
       padding: 40px;
@@ -110,27 +126,32 @@
     }
   </style>
 </head>
+
 <body>
   <header>
     <div class="logo">
       <!-- Referencing icon nested inside shortcut-extension folder if served from root -->
-      <img src="icon128.png" alt="Linksaw Logo" width="40" height="40" style="border-radius: 8px;">
+      <img src="icon.png" alt="Linksaw Logo" width="40" height="40" style="border-radius: 8px;">
       Linksaw Shortcuts
     </div>
-    <a href="https://chromewebstore.google.com/detail/linksaw-shortcuts-v2/jpnabakldholjnaeffpefggocfpndpei" target="_blank" rel="noopener" class="btn" style="padding: 10px 20px; font-size: 14px;">Get Extension</a>
+    <a href="https://chromewebstore.google.com/detail/linksaw-shortcuts-v2/jpnabakldholjnaeffpefggocfpndpei"
+      target="_blank" rel="noopener" class="btn" style="padding: 10px 20px; font-size: 14px;">Get Extension</a>
   </header>
-  
+
   <main class="hero">
     <h1>Type less. Do more.</h1>
-    <p class="lead">Linksaw Shortcuts is a global text autocomplete and expansion extension for Chrome. Create snippets for your most-used phrases and expand them instantly anywhere you type.</p>
-    <a href="https://chromewebstore.google.com/detail/linksaw-shortcuts-v2/jpnabakldholjnaeffpefggocfpndpei" target="_blank" rel="noopener" class="btn">Add to Chrome — It's Free</a>
+    <p class="lead">Linksaw Shortcuts is a global text autocomplete and expansion extension for Chrome. Create snippets
+      for your most-used phrases and expand them instantly anywhere you type.</p>
+    <a href="https://chromewebstore.google.com/detail/linksaw-shortcuts-v2/jpnabakldholjnaeffpefggocfpndpei"
+      target="_blank" rel="noopener" class="btn">Add to Chrome — It's Free</a>
   </main>
 
   <section class="features">
     <div class="features-grid">
       <div class="feature-card">
         <h3>⚡ Lightning Fast</h3>
-        <p>Just type your trigger key and your predefined phrase expands instantly inside any text field in your browser.</p>
+        <p>Just type your trigger key and your predefined phrase expands instantly inside most text fields in your
+          browser.</p>
       </div>
       <div class="feature-card">
         <h3>☁️ Cloud Sync</h3>
@@ -138,7 +159,8 @@
       </div>
       <div class="feature-card">
         <h3>⚙️ Customizable</h3>
-        <p>Define your own trigger keys, create snippets with or without titles, and effortlessly manage your library.</p>
+        <p>Define your own trigger keys, create snippets with or without titles, and effortlessly manage your library.
+        </p>
       </div>
     </div>
   </section>
@@ -147,4 +169,5 @@
     <p>&copy; 2026 Linksaw. All rights reserved.</p>
   </footer>
 </body>
+
 </html>
