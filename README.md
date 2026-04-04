@@ -1,6 +1,6 @@
-# Linksaw Shortcuts
+# Linksaw Snippets
 
-Type less. Do more. Linksaw Shortcuts is a global text autocomplete and expansion extension for Chrome. 
+Type less. Do more. Linksaw Snippets is a global text autocomplete and expansion extension for Chrome. 
 
 Create snippets for your most-used phrases and expand them instantly anywhere you type.
 
@@ -12,4 +12,4 @@ Create snippets for your most-used phrases and expand them instantly anywhere yo
 
 ## Installation
 
-Visit the [Chrome Web Store](https://chrome.google.com/webstore) to install Linksaw Shortcuts for free.
+Visit the [Chrome Web Store](https://chrome.google.com/webstore) to install Linksaw Snippets for free.
