@@ -1,0 +1,12 @@
+.DS_Store
+node_modules/
+package-lock.json
+
+# Local archives and snapshots
+*.zip
+linksaw_v2_unzipped/
+shortcut-extension/
+snippets/dashboard-textblaze/
+
+# Local mockups and throwaway files
+dropdown_mockup.html
