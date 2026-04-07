@@ -12,6 +12,7 @@
     
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
 </head>
 <body>
     <div id="auth-overlay" class="overlay">
@@ -57,9 +58,16 @@
 
         <main class="main-content">
             <header class="top-bar glass-panel">
-                <div class="search-wrap">
-                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                    <input type="text" id="search-input" placeholder="Search your snippets...">
+                <div class="toolbar-filters">
+                    <div class="search-wrap">
+                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" id="search-input" placeholder="Search your snippets...">
+                    </div>
+                    <div class="filter-wrap">
+                        <select id="category-filter" aria-label="Filter by category">
+                            <option value="">All categories</option>
+                        </select>
+                    </div>
                 </div>
                 <button id="add-snippet-btn" class="btn primary-btn btn-animate">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
@@ -96,11 +104,15 @@
                 <input type="hidden" id="snippet-id">
                 <div class="input-group">
                     <label for="snippet-title">Title</label>
-                    <input type="text" id="snippet-title" placeholder="e.g. email-greeting">
+                    <input type="text" id="snippet-title">
                 </div>
                 <div class="input-group">
                     <label for="snippet-expansion">Expansion content</label>
-                    <textarea id="snippet-expansion" placeholder="What should this expand to? Supports dynamic variables like {{mydate}}..." rows="6" required></textarea>
+                    <textarea id="snippet-expansion" rows="6" required></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="snippet-category">Category</label>
+                    <input type="text" id="snippet-category">
                 </div>
                 <div class="modal-actions">
                     <button type="button" id="modal-cancel" class="btn outline-btn">Cancel</button>

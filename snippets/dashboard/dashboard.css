@@ -171,6 +171,12 @@ body {
   z-index: 5;
 }
 
+.toolbar-filters {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 .search-wrap {
   position: relative;
   width: 400px;
@@ -200,6 +206,33 @@ body {
   border-color: var(--primary);
 }
 
+.filter-wrap select {
+  min-width: 180px;
+  padding: 12px 38px 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text-main);
+  font-size: 14px;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+    linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 2px),
+    calc(100% - 12px) calc(50% - 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.filter-wrap select:focus {
+  background-color: white;
+  border-color: var(--primary);
+}
+
 .content-wrapper {
   flex: 1;
   padding: 40px;
@@ -222,6 +255,7 @@ body {
   flex-direction: column;
   gap: 8px;
   position: relative;
+  cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
@@ -261,6 +295,11 @@ body {
   opacity: 1;
 }
 
+.snippet-actions .icon-btn.copied {
+  color: var(--primary);
+  background: rgba(82, 127, 255, 0.12);
+}
+
 .snippet-content {
   font-size: 16px;
   color: var(--text-main);
@@ -271,6 +310,30 @@ body {
   display: flex;
   align-items: flex-start;
   min-height: 60px;
+}
+
+.snippet-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.snippet-category {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--primary-hover);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Buttons */
