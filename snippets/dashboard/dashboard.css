@@ -175,6 +175,7 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
+  flex-wrap: wrap;
 }
 
 .search-wrap {
@@ -439,6 +440,10 @@ body {
   text-align: left;
   padding: 32px;
 }
+
+.bulk-modal {
+  max-width: 680px;
+}
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -469,6 +474,13 @@ body {
   outline: none;
   transition: border-color 0.2s;
   font-family: inherit;
+}
+
+#bulk-items {
+  min-height: 360px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  line-height: 1.5;
+  resize: vertical;
 }
 .input-group input:focus, .input-group textarea:focus {
   border-color: var(--primary);

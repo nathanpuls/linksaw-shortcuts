@@ -34,6 +34,7 @@ const DOM = {
     emptyState: document.getElementById('empty-state'),
     searchInput: document.getElementById('search-input'),
     categoryFilter: document.getElementById('category-filter'),
+    bulkEditBtn: document.getElementById('bulk-edit-btn'),
     addBtn: document.getElementById('add-snippet-btn'),
     
     // Modal
@@ -46,7 +47,16 @@ const DOM = {
     titleInput: document.getElementById('snippet-title'),
     categoryInput: document.getElementById('snippet-category'),
     expansionInput: document.getElementById('snippet-expansion'),
-    saveBtn: document.getElementById('save-btn')
+    saveBtn: document.getElementById('save-btn'),
+
+    bulkModalOverlay: document.getElementById('bulk-modal-overlay'),
+    bulkModalClose: document.getElementById('bulk-modal-close'),
+    bulkModalCancel: document.getElementById('bulk-modal-cancel'),
+    bulkForm: document.getElementById('bulk-form'),
+    bulkOriginalCategoryInput: document.getElementById('bulk-original-category'),
+    bulkCategoryNameInput: document.getElementById('bulk-category-name'),
+    bulkItemsInput: document.getElementById('bulk-items'),
+    bulkSaveBtn: document.getElementById('bulk-save-btn')
 };
 
 let allSnippets = [];
@@ -111,6 +121,34 @@ function renderCategoryFilter() {
     });
 
     DOM.categoryFilter.value = categories.includes(selectedValue) ? selectedValue : '';
+}
+
+function getCategoryFromMap(snippet, categoryMap = snippetCategories) {
+    return normalizeCategory(categoryMap[String(snippet.id)] || '');
+}
+
+function getManagedListSnippets(categoryName, categoryMap = snippetCategories) {
+    const normalized = normalizeCategory(categoryName);
+    if (!normalized) return [];
+
+    return allSnippets
+        .filter(snippet =>
+            getCategoryFromMap(snippet, categoryMap) === normalized &&
+            !(snippet.title || '').trim()
+        )
+        .sort((a, b) => (a.expansion || '').localeCompare(b.expansion || '', undefined, { sensitivity: 'base' }));
+}
+
+function uniqueLines(text) {
+    const seen = new Set();
+    const lines = [];
+    for (const rawLine of text.split('\n')) {
+        const line = rawLine.trim();
+        if (!line || seen.has(line)) continue;
+        seen.add(line);
+        lines.push(line);
+    }
+    return lines;
 }
 
 // === Auth ===
@@ -408,6 +446,29 @@ DOM.modalOverlay.addEventListener('click', (e) => {
     if (e.target === DOM.modalOverlay) closeModal();
 });
 
+function openBulkModal(categoryName = DOM.categoryFilter.value) {
+    const normalized = normalizeCategory(categoryName);
+    const listItems = getManagedListSnippets(normalized).map(snippet => snippet.expansion || '');
+
+    DOM.bulkOriginalCategoryInput.value = normalized;
+    DOM.bulkCategoryNameInput.value = normalized;
+    DOM.bulkItemsInput.value = listItems.join('\n');
+    DOM.bulkModalOverlay.classList.remove('hidden');
+    DOM.bulkCategoryNameInput.focus();
+    DOM.bulkCategoryNameInput.select();
+}
+
+function closeBulkModal() {
+    DOM.bulkModalOverlay.classList.add('hidden');
+}
+
+DOM.bulkEditBtn.addEventListener('click', () => openBulkModal());
+DOM.bulkModalClose.addEventListener('click', closeBulkModal);
+DOM.bulkModalCancel.addEventListener('click', closeBulkModal);
+DOM.bulkModalOverlay.addEventListener('click', (e) => {
+    if (e.target === DOM.bulkModalOverlay) closeBulkModal();
+});
+
 DOM.form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -460,6 +521,79 @@ DOM.form.addEventListener('submit', async (e) => {
         }
         closeModal();
         loadSnippets(); // Reload to get fresh data incl IDs
+    }
+});
+
+DOM.bulkForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const originalCategory = normalizeCategory(DOM.bulkOriginalCategoryInput.value);
+    const nextCategory = normalizeCategory(DOM.bulkCategoryNameInput.value);
+    const nextLines = uniqueLines(DOM.bulkItemsInput.value);
+
+    if (!nextCategory) {
+        alert('Please name the list.');
+        return;
+    }
+
+    DOM.bulkSaveBtn.textContent = 'Saving...';
+    DOM.bulkSaveBtn.disabled = true;
+
+    try {
+        const nextCategories = { ...snippetCategories };
+
+        if (originalCategory && originalCategory !== nextCategory) {
+            allSnippets
+                .filter(snippet => getSnippetCategory(snippet) === originalCategory)
+                .forEach(snippet => {
+                    nextCategories[String(snippet.id)] = nextCategory;
+                });
+        }
+
+        const existingManaged = getManagedListSnippets(nextCategory, nextCategories);
+        const existingByExpansion = new Map(
+            existingManaged.map(snippet => [(snippet.expansion || '').trim(), snippet])
+        );
+
+        const linesToKeep = new Set(nextLines);
+        const snippetsToDelete = existingManaged.filter(snippet => !linesToKeep.has((snippet.expansion || '').trim()));
+        const linesToCreate = nextLines.filter(line => !existingByExpansion.has(line));
+
+        if (snippetsToDelete.length > 0) {
+            const idsToDelete = snippetsToDelete.map(snippet => snippet.id);
+            const { error: deleteError } = await supabase
+                .from('shortcuts')
+                .delete()
+                .in('id', idsToDelete);
+
+            if (deleteError) throw deleteError;
+
+            idsToDelete.forEach(id => delete nextCategories[String(id)]);
+        }
+
+        if (linesToCreate.length > 0) {
+            const { data: insertedSnippets, error: insertError } = await supabase
+                .from('shortcuts')
+                .insert(linesToCreate.map(expansion => ({ title: '', expansion })))
+                .select('id, expansion');
+
+            if (insertError) throw insertError;
+
+            (insertedSnippets || []).forEach(snippet => {
+                nextCategories[String(snippet.id)] = nextCategory;
+            });
+        }
+
+        await persistSnippetCategories(nextCategories);
+        DOM.categoryFilter.value = nextCategory;
+        closeBulkModal();
+        await loadSnippets();
+    } catch (error) {
+        console.error('Bulk save error:', error);
+        alert('Failed to save list: ' + error.message);
+    } finally {
+        DOM.bulkSaveBtn.textContent = 'Save List';
+        DOM.bulkSaveBtn.disabled = false;
     }
 });
 
