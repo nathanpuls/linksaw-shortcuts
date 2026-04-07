@@ -209,7 +209,7 @@ body {
 /* Grid Layout */
 .grid-layout {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
 
@@ -217,10 +217,10 @@ body {
   background: white;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 24px;
+  padding: 20px 24px 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
   position: relative;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
@@ -239,12 +239,14 @@ body {
 
 .snippet-title {
   font-weight: 600;
-  font-size: 16px;
-  color: var(--text-main);
-  background: #f1f5f9;
-  padding: 4px 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  padding: 4px 10px;
   border-radius: 6px;
   font-family: monospace;
+  text-transform: lowercase;
 }
 
 .snippet-actions {
@@ -252,6 +254,7 @@ body {
   gap: 8px;
   opacity: 0;
   transition: opacity 0.2s;
+  margin-left: auto;
 }
 
 .snippet-card:hover .snippet-actions {
@@ -259,13 +262,15 @@ body {
 }
 
 .snippet-content {
-  font-size: 14px;
-  color: var(--text-muted);
-  line-height: 1.5;
+  font-size: 16px;
+  color: var(--text-main);
+  line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
-  max-height: 120px;
-  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  min-height: 60px;
 }
 
 /* Buttons */

@@ -140,6 +140,13 @@ function filterAndRender() {
         (s.expansion || '').toLowerCase().includes(query)
     );
     
+    // Alphabetical sort by title (or expansion if no title)
+    filtered.sort((a, b) => {
+        const valA = (a.title || a.expansion || '').toLowerCase();
+        const valB = (b.title || b.expansion || '').toLowerCase();
+        return valA.localeCompare(valB);
+    });
+    
     DOM.grid.innerHTML = '';
     
     if (filtered.length === 0) {
@@ -153,9 +160,9 @@ function filterAndRender() {
             const card = document.createElement('div');
             card.classList.add('snippet-card');
             
-            const titleDisplay = (snippet.title && !snippet.title.startsWith(';;__')) 
-                ? snippet.title.replace(/^;+/, '') 
-                : '<span style="color:var(--text-muted);font-style:italic;font-family:inherit;">Untitled</span>';
+            const realTitle = (snippet.title && !snippet.title.startsWith(';;__')) 
+                ? snippet.title.replace(/^;+/, '').trim() 
+                : null;
                 
             let previewText = snippet.expansion;
             if (previewText.length > 200) previewText = previewText.substring(0, 200) + '...';
@@ -167,7 +174,7 @@ function filterAndRender() {
             
             card.innerHTML = `
                 <div class="snippet-header">
-                    <div class="snippet-title">${titleDisplay}</div>
+                    ${realTitle ? `<div class="snippet-title">${realTitle}</div>` : ''}
                     <div class="snippet-actions">
                         <button class="icon-btn edit-btn" title="Edit">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
