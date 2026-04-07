@@ -447,7 +447,8 @@ DOM.modalOverlay.addEventListener('click', (e) => {
 });
 
 function openBulkModal(categoryName = DOM.categoryFilter.value) {
-    const normalized = normalizeCategory(categoryName);
+    const fallbackName = normalizeCategory(DOM.searchInput.value);
+    const normalized = normalizeCategory(categoryName) || fallbackName;
     const listItems = getManagedListSnippets(normalized).map(snippet => snippet.expansion || '');
 
     DOM.bulkOriginalCategoryInput.value = normalized;
@@ -532,7 +533,7 @@ DOM.bulkForm.addEventListener('submit', async (e) => {
     const nextLines = uniqueLines(DOM.bulkItemsInput.value);
 
     if (!nextCategory) {
-        alert('Please name the list.');
+        alert('Please choose or type a list name first.');
         return;
     }
 

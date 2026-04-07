@@ -167,6 +167,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 18px;
   border-bottom: 1px solid var(--border-color);
   z-index: 5;
 }
@@ -175,12 +176,16 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: nowrap;
 }
 
 .search-wrap {
   position: relative;
-  width: 400px;
+  flex: 1 1 360px;
+  min-width: 220px;
+  max-width: 460px;
 }
 
 .search-wrap .search-icon {
@@ -227,6 +232,11 @@ body {
   background-size: 6px 6px, 6px 6px;
   background-repeat: no-repeat;
   transition: border-color 0.2s, background 0.2s;
+}
+
+#bulk-edit-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .filter-wrap select:focus {
