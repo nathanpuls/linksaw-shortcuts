@@ -1,0 +1,12 @@
+{
+  "name": "linksaw",
+  "version": "1.0.0",
+  "description": "Linksaw Snippets - Chrome extension + web dashboard",
+  "scripts": {
+    "dev": "npx serve . -p 5500 --no-clipboard && open http://localhost:5500/snippets/dashboard/",
+    "start": "npx serve . -p 5500 --no-clipboard"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

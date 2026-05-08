@@ -1,0 +1,5 @@
+# Cloudflare Pages Redirects
+/snippets/dashboard  /snippets/dashboard/index.html  200
+
+# Redirect /snippets to the dashboard
+/snippets  /snippets/dashboard/  302
