@@ -88,6 +88,31 @@
             let listOpen = "";
             let blockquote = [];
 
+            function getMarkdownTitle() {
+                const firstContentLine = lines.find((line) => {
+                    const trimmed = line.trim();
+                    return trimmed && !/^(-{3,}|\*{3,}|_{3,})$/.test(trimmed);
+                });
+
+                if (!firstContentLine) return "Sheet Markdown";
+
+                const title = firstContentLine
+                    .trim()
+                    .replace(/^>\s?/, "")
+                    .replace(/^#{1,6}\s+/, "")
+                    .replace(/^[-*+]\s+/, "")
+                    .replace(/^\d+[.)]\s+/, "")
+                    .replace(/^\|/, "")
+                    .replace(/\|$/, "")
+                    .replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, "$1")
+                    .replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, "$1")
+                    .replace(/[*_`]/g, "")
+                    .replace(/\s*\|\s*/g, " ")
+                    .trim();
+
+                return title || "Sheet Markdown";
+            }
+
             function renderInline(value) {
                 return escapeHtml(value)
                     .replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, '<img src="$2" alt="$1">')
@@ -243,12 +268,14 @@
             flushParagraph();
             closeList();
 
+            const documentTitle = escapeHtml(getMarkdownTitle());
+
             return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sheet Markdown</title>
+  <title>${documentTitle}</title>
   <style>
     * {
       box-sizing: border-box;
