@@ -85,15 +85,35 @@
             const lines = markdown.replace(/\r\n/g, "\n").split("\n");
             const html = [];
             let paragraph = [];
-            let listOpen = false;
+            let listOpen = "";
+            let blockquote = [];
 
             function renderInline(value) {
                 return escapeHtml(value)
-                    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
-                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+                    .replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, '<img src="$2" alt="$1">')
+                    .replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, '<a href="$2">$1</a>')
                     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+                    .replace(/__([^_]+)__/g, "<strong>$1</strong>")
                     .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+                    .replace(/_([^_]+)_/g, "<em>$1</em>")
                     .replace(/`([^`]+)`/g, "<code>$1</code>");
+            }
+
+            function splitTableRow(line) {
+                return line
+                    .trim()
+                    .replace(/^\|/, "")
+                    .replace(/\|$/, "")
+                    .split("|")
+                    .map((cell) => cell.trim());
+            }
+
+            function isTableSeparator(line) {
+                return /^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(line.trim());
+            }
+
+            function isTableRow(line) {
+                return line.trim().includes("|");
             }
 
             function flushParagraph() {
@@ -104,16 +124,82 @@
 
             function closeList() {
                 if (!listOpen) return;
-                html.push("</ul>");
-                listOpen = false;
+                html.push(`</${listOpen}>`);
+                listOpen = "";
             }
 
-            for (const line of lines) {
+            function flushBlockquote() {
+                if (!blockquote.length) return;
+                flushParagraph();
+                closeList();
+                const quoteHtml = markdownToHtml(blockquote.join("\n"))
+                    .match(/<article class="preview-content">\s*([\s\S]*?)\s*<\/article>/)?.[1]
+                    .trim() || renderInline(blockquote.join(" "));
+                html.push(`<blockquote>${quoteHtml}</blockquote>`);
+                blockquote = [];
+            }
+
+            function renderTable(startIndex) {
+                const headers = splitTableRow(lines[startIndex]);
+                let rowIndex = startIndex + 2;
+                const rows = [];
+
+                while (rowIndex < lines.length && isTableRow(lines[rowIndex].trim()) && lines[rowIndex].trim()) {
+                    rows.push(splitTableRow(lines[rowIndex]));
+                    rowIndex += 1;
+                }
+
+                html.push("<table>");
+                html.push("<thead>");
+                html.push(`<tr>${headers.map((cell) => `<th>${renderInline(cell)}</th>`).join("")}</tr>`);
+                html.push("</thead>");
+
+                if (rows.length) {
+                    html.push("<tbody>");
+                    for (const row of rows) {
+                        html.push(`<tr>${row.map((cell) => `<td>${renderInline(cell)}</td>`).join("")}</tr>`);
+                    }
+                    html.push("</tbody>");
+                }
+
+                html.push("</table>");
+                return rowIndex - 1;
+            }
+
+            for (let index = 0; index < lines.length; index += 1) {
+                const line = lines[index];
                 const trimmed = line.trim();
 
                 if (!trimmed) {
+                    flushBlockquote();
                     flushParagraph();
                     closeList();
+                    continue;
+                }
+
+                const quote = trimmed.match(/^>\s?(.*)$/);
+                if (quote) {
+                    blockquote.push(quote[1]);
+                    continue;
+                }
+
+                flushBlockquote();
+
+                if (/^(-{3,}|\*{3,}|_{3,})$/.test(trimmed)) {
+                    flushParagraph();
+                    closeList();
+                    html.push("<hr>");
+                    continue;
+                }
+
+                if (
+                    isTableRow(trimmed) &&
+                    index + 1 < lines.length &&
+                    isTableSeparator(lines[index + 1])
+                ) {
+                    flushParagraph();
+                    closeList();
+                    index = renderTable(index);
                     continue;
                 }
 
@@ -126,20 +212,34 @@
                     continue;
                 }
 
-                const item = trimmed.match(/^[-*]\s+(.+)$/);
-                if (item) {
+                const unorderedItem = trimmed.match(/^[-*+]\s+(.+)$/);
+                if (unorderedItem) {
                     flushParagraph();
-                    if (!listOpen) {
+                    if (listOpen !== "ul") {
+                        closeList();
                         html.push("<ul>");
-                        listOpen = true;
+                        listOpen = "ul";
                     }
-                    html.push(`<li>${renderInline(item[1])}</li>`);
+                    html.push(`<li>${renderInline(unorderedItem[1])}</li>`);
+                    continue;
+                }
+
+                const orderedItem = trimmed.match(/^\d+[.)]\s+(.+)$/);
+                if (orderedItem) {
+                    flushParagraph();
+                    if (listOpen !== "ol") {
+                        closeList();
+                        html.push("<ol>");
+                        listOpen = "ol";
+                    }
+                    html.push(`<li>${renderInline(orderedItem[1])}</li>`);
                     continue;
                 }
 
                 paragraph.push(trimmed);
             }
 
+            flushBlockquote();
             flushParagraph();
             closeList();
 
