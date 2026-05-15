@@ -94,7 +94,7 @@
                     return trimmed && !/^(-{3,}|\*{3,}|_{3,})$/.test(trimmed);
                 });
 
-                if (!firstContentLine) return "Sheet Markdown";
+                if (!firstContentLine) return "";
 
                 const title = firstContentLine
                     .trim()
@@ -110,7 +110,7 @@
                     .replace(/\s*\|\s*/g, " ")
                     .trim();
 
-                return title || "Sheet Markdown";
+                return title;
             }
 
             function renderInline(value) {
