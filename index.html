@@ -51,16 +51,17 @@
     <script>
         const sheetId = "1YM3Kgc-uKrnZlvKFA9Ul-_d1NRk02FWfthSfsV0Mij8";
         const sheetName = "Sheet1";
-        const range = "A1";
+        const range = "A:B";
 
         function showError(error) {
             document.body.innerHTML = `
         <main class="status">
-          <h1>Could not load the Sheet HTML</h1>
+          <h1>Could not load the Sheet content</h1>
           <p>
             Check that the Google Sheet is shared with
-            <code>Anyone with the link can view</code>, and that your HTML is in
-            <code>Sheet1!A1</code>.
+            <code>Anyone with the link can view</code>. Put default content in
+            <code>Sheet1!A1</code>, or put a shortcut path in column B and its
+            destination/content in column A.
           </p>
           <pre>${String(error).replace(/[<>&]/g, (char) => ({
                 "<": "&lt;",
@@ -480,11 +481,46 @@
             return "";
         }
 
+        function getCellValue(row, columnIndex) {
+            return row?.c?.[columnIndex]?.v || "";
+        }
+
+        function normalizeShortcutName(value) {
+            return String(value)
+                .trim()
+                .replace(/^https?:\/\/[^/]+/i, "")
+                .replace(/[?#].*$/, "")
+                .replace(/^\/+|\/+$/g, "")
+                .toLowerCase();
+        }
+
+        function getRequestedShortcutName() {
+            return normalizeShortcutName(window.location.pathname);
+        }
+
+        function getSheetValueForRoute(data) {
+            const rows = data.table.rows || [];
+            const requestedName = getRequestedShortcutName();
+
+            if (requestedName) {
+                const matchedRow = rows.find((row) => {
+                    const shortcutName = normalizeShortcutName(getCellValue(row, 1));
+                    return shortcutName && shortcutName === requestedName;
+                });
+
+                if (matchedRow) {
+                    return getCellValue(matchedRow, 0);
+                }
+            }
+
+            return getCellValue(rows[0], 0);
+        }
+
         window.renderFromSheet = function renderFromSheet(data) {
-            const value = data.table.rows[0]?.c[0]?.v || "";
+            const value = getSheetValueForRoute(data);
 
             if (!value.trim()) {
-                showError(new Error("Sheet1!A1 is empty."));
+                showError(new Error("No content or redirect URL was found for this path."));
                 return;
             }
 

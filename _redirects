@@ -3,3 +3,6 @@
 
 # Redirect /snippets to the dashboard
 /snippets  /snippets/dashboard/  302
+
+# Let sheet-defined shortcuts like /go resolve in the client renderer
+/*  /index.html  200
