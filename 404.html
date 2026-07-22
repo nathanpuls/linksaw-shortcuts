@@ -1,135 +1,562 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Page Not Found | Linksaw Snippets</title>
-    <!-- Modern Premium Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-bg: #0f172a;
-            --secondary-bg: #1e293b;
-            --accent-primary: #3b82f6;
-            --accent-secondary: #0ea5e9;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-        }
 
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <style>
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
         }
 
         body {
-            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--primary-bg);
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #111827;
+            background: #ffffff;
         }
 
-        .container {
-            text-align: center;
-            max-width: 600px;
-            padding: 2rem;
-            position: relative;
+        .status {
+            max-width: 680px;
+            margin: 12vh auto;
+            padding: 0 24px;
+            line-height: 1.5;
         }
 
-        /* Glassmorphism Background Pattern */
-        .bg-pattern {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 60%);
-            pointer-events: none;
-            z-index: -1;
+        .status h1 {
+            margin: 0 0 12px;
+            font-size: 28px;
         }
 
-        h1 {
-            font-size: 15rem;
-            font-weight: 800;
-            background: linear-gradient(to bottom right, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            line-height: 1;
-            margin-bottom: 0;
-            letter-spacing: -0.05em;
-            opacity: 0.15;
-            user-select: none;
+        .status code,
+        .status pre {
+            background: #eef2f7;
+            border-radius: 6px;
         }
 
-        .content {
-            margin-top: -6rem;
-            position: relative;
-            z-index: 10;
+        .status code {
+            padding: 2px 6px;
         }
 
-        h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            letter-spacing: -0.02em;
-        }
-
-        p {
-            font-size: 1.1rem;
-            color: var(--text-dim);
-            margin-bottom: 2.5rem;
-            line-height: 1.6;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.8rem 2rem;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            border-radius: 50px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4);
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 25px -5px rgba(59, 130, 246, 0.5);
-            filter: brightness(1.1);
-        }
-
-        /* Subtle floating animation */
-        @keyframes floating {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        .floating {
-            animation: floating 6s ease-in-out infinite;
+        .status pre {
+            overflow: auto;
+            padding: 14px;
+            white-space: pre-wrap;
         }
     </style>
 </head>
+
 <body>
-    <div class="bg-pattern"></div>
-    
-    <div class="container floating">
-        <h1>404</h1>
-        <div class="content">
-            <h2>Lost in the snippet forest?</h2>
-            <p>
-                We couldn't find the page you're looking for. <br>
-                Check the URL or head back to the console.
-            </p>
-            <a href="/" class="btn">Back to Home</a>
-        </div>
-    </div>
+    <script>
+        const sheetId = "1YM3Kgc-uKrnZlvKFA9Ul-_d1NRk02FWfthSfsV0Mij8";
+        const sheetName = "Sheet1";
+        const range = "A:B";
+
+        function showError(error) {
+            document.body.innerHTML = `
+        <main class="status">
+          <h1>Could not load the Sheet content</h1>
+          <p>
+            Check that the Google Sheet is shared with
+            <code>Anyone with the link can view</code>. Put default content in
+            <code>Sheet1!A1</code>, or put a shortcut path in column B and its
+            destination/content in column A.
+          </p>
+          <pre>${String(error).replace(/[<>&]/g, (char) => ({
+                "<": "&lt;",
+                ">": "&gt;",
+                "&": "&amp;"
+            })[char])}</pre>
+        </main>
+      `;
+        }
+
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, (char) => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            })[char]);
+        }
+
+        function markdownToHtml(markdown) {
+            const lines = markdown.replace(/\r\n/g, "\n").split("\n");
+            const html = [];
+            let paragraph = [];
+            let listOpen = "";
+            let blockquote = [];
+
+            function getMarkdownTitle() {
+                const firstContentLine = lines.find((line) => {
+                    const trimmed = line.trim();
+                    return trimmed && !/^(-{3,}|\*{3,}|_{3,})$/.test(trimmed);
+                });
+
+                if (!firstContentLine) return "";
+
+                const title = firstContentLine
+                    .trim()
+                    .replace(/^>\s?/, "")
+                    .replace(/^#{1,6}\s+/, "")
+                    .replace(/^[-*+]\s+/, "")
+                    .replace(/^\d+[.)]\s+/, "")
+                    .replace(/^\|/, "")
+                    .replace(/\|$/, "")
+                    .replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, "$1")
+                    .replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, "$1")
+                    .replace(/[*_`]/g, "")
+                    .replace(/\s*\|\s*/g, " ")
+                    .trim();
+
+                return title;
+            }
+
+            function renderInline(value) {
+                return escapeHtml(value)
+                    .replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, '<img src="$2" alt="$1">')
+                    .replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, '<a href="$2">$1</a>')
+                    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+                    .replace(/__([^_]+)__/g, "<strong>$1</strong>")
+                    .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+                    .replace(/_([^_]+)_/g, "<em>$1</em>")
+                    .replace(/`([^`]+)`/g, "<code>$1</code>");
+            }
+
+            function splitTableRow(line) {
+                return line
+                    .trim()
+                    .replace(/^\|/, "")
+                    .replace(/\|$/, "")
+                    .split("|")
+                    .map((cell) => cell.trim());
+            }
+
+            function isTableSeparator(line) {
+                return /^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(line.trim());
+            }
+
+            function isTableRow(line) {
+                return line.trim().includes("|");
+            }
+
+            function flushParagraph() {
+                if (!paragraph.length) return;
+                html.push(`<p>${renderInline(paragraph.join(" "))}</p>`);
+                paragraph = [];
+            }
+
+            function closeList() {
+                if (!listOpen) return;
+                html.push(`</${listOpen}>`);
+                listOpen = "";
+            }
+
+            function flushBlockquote() {
+                if (!blockquote.length) return;
+                flushParagraph();
+                closeList();
+                const quoteHtml = markdownToHtml(blockquote.join("\n"))
+                    .match(/<article class="preview-content">\s*([\s\S]*?)\s*<\/article>/)?.[1]
+                    .trim() || renderInline(blockquote.join(" "));
+                html.push(`<blockquote>${quoteHtml}</blockquote>`);
+                blockquote = [];
+            }
+
+            function renderTable(startIndex) {
+                const headers = splitTableRow(lines[startIndex]);
+                let rowIndex = startIndex + 2;
+                const rows = [];
+
+                while (rowIndex < lines.length && isTableRow(lines[rowIndex].trim()) && lines[rowIndex].trim()) {
+                    rows.push(splitTableRow(lines[rowIndex]));
+                    rowIndex += 1;
+                }
+
+                html.push("<table>");
+                html.push("<thead>");
+                html.push(`<tr>${headers.map((cell) => `<th>${renderInline(cell)}</th>`).join("")}</tr>`);
+                html.push("</thead>");
+
+                if (rows.length) {
+                    html.push("<tbody>");
+                    for (const row of rows) {
+                        html.push(`<tr>${row.map((cell) => `<td>${renderInline(cell)}</td>`).join("")}</tr>`);
+                    }
+                    html.push("</tbody>");
+                }
+
+                html.push("</table>");
+                return rowIndex - 1;
+            }
+
+            for (let index = 0; index < lines.length; index += 1) {
+                const line = lines[index];
+                const trimmed = line.trim();
+
+                if (!trimmed) {
+                    flushBlockquote();
+                    flushParagraph();
+                    closeList();
+                    continue;
+                }
+
+                const quote = trimmed.match(/^>\s?(.*)$/);
+                if (quote) {
+                    blockquote.push(quote[1]);
+                    continue;
+                }
+
+                flushBlockquote();
+
+                if (/^(-{3,}|\*{3,}|_{3,})$/.test(trimmed)) {
+                    flushParagraph();
+                    closeList();
+                    html.push("<hr>");
+                    continue;
+                }
+
+                if (
+                    isTableRow(trimmed) &&
+                    index + 1 < lines.length &&
+                    isTableSeparator(lines[index + 1])
+                ) {
+                    flushParagraph();
+                    closeList();
+                    index = renderTable(index);
+                    continue;
+                }
+
+                const heading = trimmed.match(/^(#{1,6})\s+(.+)$/);
+                if (heading) {
+                    flushParagraph();
+                    closeList();
+                    const level = heading[1].length;
+                    html.push(`<h${level}>${renderInline(heading[2])}</h${level}>`);
+                    continue;
+                }
+
+                const unorderedItem = trimmed.match(/^[-*+]\s+(.+)$/);
+                if (unorderedItem) {
+                    flushParagraph();
+                    if (listOpen !== "ul") {
+                        closeList();
+                        html.push("<ul>");
+                        listOpen = "ul";
+                    }
+                    html.push(`<li>${renderInline(unorderedItem[1])}</li>`);
+                    continue;
+                }
+
+                const orderedItem = trimmed.match(/^\d+[.)]\s+(.+)$/);
+                if (orderedItem) {
+                    flushParagraph();
+                    if (listOpen !== "ol") {
+                        closeList();
+                        html.push("<ol>");
+                        listOpen = "ol";
+                    }
+                    html.push(`<li>${renderInline(orderedItem[1])}</li>`);
+                    continue;
+                }
+
+                paragraph.push(trimmed);
+            }
+
+            flushBlockquote();
+            flushParagraph();
+            closeList();
+
+            const documentTitle = escapeHtml(getMarkdownTitle());
+
+            return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${documentTitle}</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      --accent: #6b7280;
+      --accent-soft: #f3f4f6;
+      --accent-border: #e5e7eb;
+      --link-color: #111827;
+      margin: 0;
+      background: #ffffff;
+      color: #111827;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .preview-content {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 64px 20px 80px;
+      font-size: 16px;
+      line-height: 1.72;
+    }
+
+    .preview-content h1,
+    .preview-content h2,
+    .preview-content h3,
+    .preview-content h4 {
+      margin: 36px 0 18px;
+      font-weight: 650;
+    }
+
+    .preview-content h1 {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .preview-content h2 {
+      font-size: 24px;
+      line-height: 1.25;
+    }
+
+    .preview-content h3 {
+      font-size: 20px;
+      line-height: 1.3;
+    }
+
+    .preview-content h4 {
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .preview-content > :first-child {
+      margin-top: 0;
+    }
+
+    .preview-content p,
+    .preview-content li {
+      font-size: 17px;
+      margin: 0 0 16px;
+    }
+
+    .preview-content ul,
+    .preview-content ol {
+      margin: 0 0 20px;
+      padding-left: 1.5rem;
+    }
+
+    .preview-content a {
+      color: var(--link-color);
+      text-decoration: underline;
+      text-decoration-color: var(--accent);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.25em;
+    }
+
+    .preview-content blockquote {
+      margin: 24px 0;
+      padding: 0 0 0 16px;
+      border-left: 3px solid var(--accent-border);
+      color: #4b5563;
+    }
+
+    .preview-content blockquote p {
+      margin-bottom: 0;
+    }
+
+    .preview-content code:not(pre code) {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.92em;
+      background: var(--accent-soft);
+      color: #111827;
+      border-radius: 5px;
+      padding: 0.2em 0.4em;
+    }
+
+    .preview-content pre {
+      background: #f9fafb;
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+    }
+
+    .preview-content pre code {
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      color: inherit;
+      font-size: 0.9em;
+      line-height: 1.6;
+    }
+
+    .preview-content img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 20px 0;
+      border-radius: 12px;
+    }
+
+    .preview-content hr {
+      border: 0;
+      border-top: 1px solid var(--accent-border);
+      margin: 36px 0;
+    }
+
+    .preview-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 15px;
+    }
+
+    .preview-content th,
+    .preview-content td {
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    .preview-content th {
+      background: var(--accent-soft);
+      font-weight: 650;
+    }
+  </style>
+</head>
+<body>
+  <article class="preview-content">
+    ${html.join("\n    ")}
+  </article>
 </body>
+</html>`;
+        }
+
+        function getRenderableHtml(value) {
+            const trimmed = value.trim();
+            const withoutCodeFence = trimmed
+                .replace(/^```(?:html|markdown|md)?\s*/i, "")
+                .replace(/\s*```$/i, "")
+                .trim();
+
+            if (/^<!doctype html/i.test(withoutCodeFence) || /^<html[\s>]/i.test(withoutCodeFence)) {
+                return withoutCodeFence;
+            }
+
+            if (/<(head|body|main|section|div|h1|p|style|script|img|a)[\s>]/i.test(withoutCodeFence)) {
+                return withoutCodeFence;
+            }
+
+            return markdownToHtml(withoutCodeFence);
+        }
+
+        function getRedirectUrl(value) {
+            const trimmed = value.trim();
+
+            if (!trimmed || /\s/.test(trimmed) || /[<>]/.test(trimmed)) {
+                return "";
+            }
+
+            if (/^(mailto|tel|sms):/i.test(trimmed)) {
+                return trimmed;
+            }
+
+            if (/^https?:\/\//i.test(trimmed)) {
+                return trimmed;
+            }
+
+            if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) {
+                return "";
+            }
+
+            if (/^(localhost|[\w-]+(\.[\w-]+)+)(:\d+)?(\/.*)?$/i.test(trimmed)) {
+                return `https://${trimmed}`;
+            }
+
+            return "";
+        }
+
+        function getCellValue(row, columnIndex) {
+            return row?.c?.[columnIndex]?.v || "";
+        }
+
+        function normalizeShortcutName(value) {
+            return String(value)
+                .trim()
+                .replace(/^https?:\/\/[^/]+/i, "")
+                .replace(/[?#].*$/, "")
+                .replace(/^\/+|\/+$/g, "")
+                .toLowerCase();
+        }
+
+        function getRequestedShortcutName() {
+            return normalizeShortcutName(window.location.pathname);
+        }
+
+        function getSheetValueForRoute(data) {
+            const rows = data.table.rows || [];
+            const requestedName = getRequestedShortcutName();
+
+            if (requestedName) {
+                const matchedRow = rows.find((row) => {
+                    const shortcutName = normalizeShortcutName(getCellValue(row, 1));
+                    return shortcutName && shortcutName === requestedName;
+                });
+
+                if (matchedRow) {
+                    return getCellValue(matchedRow, 0);
+                }
+            }
+
+            return getCellValue(rows[0], 0);
+        }
+
+        window.renderFromSheet = function renderFromSheet(data) {
+            const value = getSheetValueForRoute(data);
+
+            if (!value.trim()) {
+                showError(new Error("No content or redirect URL was found for this path."));
+                return;
+            }
+
+            const redirectUrl = getRedirectUrl(value);
+
+            if (redirectUrl) {
+                window.location.replace(redirectUrl);
+                return;
+            }
+
+            const html = getRenderableHtml(value);
+
+            document.open();
+            document.write(html);
+            document.close();
+        };
+
+        function loadSheetHtml() {
+            const script = document.createElement("script");
+            const url =
+                `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq` +
+                `?tqx=${encodeURIComponent("responseHandler:renderFromSheet;out:json")}` +
+                `&sheet=${encodeURIComponent(sheetName)}` +
+                `&range=${encodeURIComponent(range)}`;
+
+            script.src = url;
+            script.async = true;
+            script.onerror = () => {
+                showError(new Error("Google Sheets script load failed."));
+            };
+
+            document.head.appendChild(script);
+        }
+
+        loadSheetHtml();
+    </script>
+</body>
+
 </html>
